@@ -1,0 +1,97 @@
+---
+import { navItems, site } from "../lib/site";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-ink-200 bg-ink-50/80 backdrop-blur
+    dark:border-ink-800 dark:bg-ink-950/80"
+>
+  <nav class="container-page flex h-16 items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-2 font-bold tracking-tight">
+      <span
+        class="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-sm
+          font-black text-white">ex</span
+      >
+      <span class="text-lg">{site.name}</span>
+    </a>
+
+    <ul class="hidden items-center gap-1 md:flex">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                "rounded-lg px-3 py-2 text-sm font-medium transition",
+                isActive(item.href)
+                  ? "bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-200"
+                  : "text-ink-600 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-white",
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="flex items-center gap-2">
+      <ThemeToggle />
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="btn-ghost !px-2.5 md:hidden"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="hidden border-t border-ink-200 md:hidden dark:border-ink-800">
+    <ul class="container-page flex flex-col gap-1 py-3">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                "block rounded-lg px-3 py-2 text-sm font-medium",
+                isActive(item.href)
+                  ? "bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-200"
+                  : "text-ink-700 hover:bg-ink-100 dark:text-ink-200 dark:hover:bg-ink-800",
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+  btn?.addEventListener("click", () => {
+    const open = menu?.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+</script>

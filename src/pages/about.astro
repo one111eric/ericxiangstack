@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+
+const skills = [
+  "TypeScript",
+  "React",
+  "Node.js",
+  "Python",
+  "Astro",
+  "Cloudflare",
+  "SQL",
+  "AWS",
+];
+
+const experience = [
+  {
+    role: "Software Engineer",
+    org: "Intuit",
+    period: "Present",
+    summary:
+      "Building data-driven products and internal tooling.",
+  },
+];
+---
+
+<BaseLayout title="About" description="About Eric Xiang.">
+  <PageHeader
+    eyebrow="About"
+    title="A bit about me"
+    subtitle="Engineer, builder, and Path of Exile enthusiast."
+  />
+
+  <section class="container-page py-12">
+    <div class="grid gap-12 lg:grid-cols-3">
+      <div class="prose-links lg:col-span-2 space-y-4 text-ink-700 dark:text-ink-300">
+        <p>
+          I'm Eric - I like turning ideas into things people can actually use.
+          This site is where I collect my projects, the small utilities I build
+          to scratch my own itches, and resources for games I enjoy.
+        </p>
+        <p>
+          Outside of work I spend an unreasonable amount of time in Path of
+          Exile, which is why it gets its own section here.
+        </p>
+      </div>
+
+      <aside class="space-y-8">
+        <div>
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-ink-500">
+            Skills
+          </h2>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {skills.map((s) => <span class="tag">{s}</span>)}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-ink-500">
+            Experience
+          </h2>
+          <ul class="mt-3 space-y-4">
+            {
+              experience.map((e) => (
+                <li>
+                  <p class="font-medium">
+                    {e.role} &middot; {e.org}
+                  </p>
+                  <p class="text-xs text-ink-500">{e.period}</p>
+                  <p class="mt-1 text-sm text-ink-600 dark:text-ink-300">
+                    {e.summary}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

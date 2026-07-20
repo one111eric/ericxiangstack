@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import UnitConverter from "../../components/tools/UnitConverter.tsx";
+---
+
+<BaseLayout
+  title="Unit Converter"
+  description="Convert length, mass, temperature, and data sizes instantly, right in your browser."
+>
+  <PageHeader
+    eyebrow="Tools"
+    title="Unit Converter"
+    subtitle="Length, mass, temperature, and data - converted instantly and precisely, all client-side."
+  />
+
+  <section class="container-page py-12">
+    <div class="mx-auto max-w-3xl">
+      <UnitConverter client:load />
+
+      <div class="mt-8 text-sm text-ink-500">
+        <a href="/tools" class="font-medium text-brand-600 hover:underline dark:text-brand-300">
+          &larr; Back to all tools
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

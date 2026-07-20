@@ -1,0 +1,11 @@
+name = "ericxiangstack"
+compatibility_date = "2026-07-15"
+pages_build_output_dir = "dist"
+
+# KV namespace used by the PoE proxy to cache upstream responses and respect
+# rate limits. Create it once with:
+#   wrangler kv namespace create POE_CACHE
+# then paste the generated id below and uncomment.
+# [[kv_namespaces]]
+# binding = "POE_CACHE"
+# id = "<your-kv-namespace-id>"

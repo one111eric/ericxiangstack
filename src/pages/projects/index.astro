@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<BaseLayout title="Projects" description="Projects built by Eric Xiang.">
+  <PageHeader
+    eyebrow="Projects"
+    title="Things I've built"
+    subtitle="A selection of projects, experiments, and shipped work."
+  />
+
+  <section class="container-page py-12">
+    {
+      projects.length === 0 ? (
+        <p class="text-ink-500">Projects coming soon.</p>
+      ) : (
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p) => (
+            <ProjectCard
+              title={p.data.title}
+              description={p.data.description}
+              tags={p.data.tags}
+              repo={p.data.repo}
+              demo={p.data.demo}
+              href={`/projects/${p.id}`}
+            />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

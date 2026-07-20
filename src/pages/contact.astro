@@ -1,0 +1,109 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { site } from "../lib/site";
+---
+
+<BaseLayout title="Contact" description="Get in touch with Eric Xiang.">
+  <PageHeader
+    eyebrow="Contact"
+    title="Get in touch"
+    subtitle="Questions, ideas, or just want to say hi? Drop a message."
+  />
+
+  <section class="container-page py-12">
+    <div class="grid gap-12 lg:grid-cols-2">
+      <form id="contact-form" class="space-y-4" novalidate>
+        <div>
+          <label for="name" class="mb-1 block text-sm font-medium">Name</label>
+          <input id="name" name="name" type="text" required class="field" />
+        </div>
+        <div>
+          <label for="email" class="mb-1 block text-sm font-medium">Email</label>
+          <input id="email" name="email" type="email" required class="field" />
+        </div>
+        <div>
+          <label for="message" class="mb-1 block text-sm font-medium"
+            >Message</label
+          >
+          <textarea id="message" name="message" rows="5" required class="field"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Send message</button>
+        <p id="form-status" class="text-sm" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="space-y-6">
+        <div class="card">
+          <h2 class="text-lg font-semibold">Other ways to reach me</h2>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li>
+              <span class="text-ink-500">Email:</span>
+              <a class="prose-links" href={`mailto:${site.email}`}>{site.email}</a>
+            </li>
+            <li>
+              <span class="text-ink-500">GitHub:</span>
+              <a
+                class="prose-links"
+                href={site.social.github}
+                target="_blank"
+                rel="noopener noreferrer">one111eric</a
+              >
+            </li>
+            <li>
+              <span class="text-ink-500">LinkedIn:</span>
+              <a
+                class="prose-links"
+                href={site.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer">Eric Xiang</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  const status = document.getElementById("form-status");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (status) {
+      status.textContent = "Sending...";
+      status.className = "text-sm text-ink-500";
+    }
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (res.ok) {
+        form.reset();
+        if (status) {
+          status.textContent = "Thanks! Your message has been sent.";
+          status.className = "text-sm text-green-600 dark:text-green-400";
+        }
+      } else {
+        throw new Error(body.error || "Something went wrong.");
+      }
+    } catch (err) {
+      if (status) {
+        status.textContent =
+          err instanceof Error ? err.message : "Something went wrong.";
+        status.className = "text-sm text-red-600 dark:text-red-400";
+      }
+    }
+  });
+</script>

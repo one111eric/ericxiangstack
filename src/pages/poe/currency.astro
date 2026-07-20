@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import CurrencyPrices from "../../components/poe/CurrencyPrices.tsx";
+---
+
+<BaseLayout
+  title="PoE Live Currency Prices"
+  description="Real-time Path of Exile currency chaos values, sourced from poe.ninja."
+>
+  <PageHeader
+    eyebrow="Path of Exile"
+    title="Live currency prices"
+    subtitle="Chaos-equivalent values sourced from poe.ninja, cached at the edge for speed."
+  />
+
+  <section class="container-page py-12">
+    <div class="mx-auto max-w-3xl">
+      <CurrencyPrices client:load />
+
+      <div class="mt-8 text-sm text-ink-500">
+        <a href="/poe" class="font-medium text-brand-600 hover:underline dark:text-brand-300">
+          &larr; Back to PoE resources
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eric-xiang.com/sitemap-index.xml

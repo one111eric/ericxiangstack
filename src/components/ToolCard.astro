@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  category?: string;
+  available?: boolean;
+}
+const { title, description, href, category, available = true } = Astro.props;
+---
+
+<a
+  href={available ? href : "#"}
+  class:list={[
+    "card group flex h-full flex-col",
+    !available && "pointer-events-none opacity-60",
+  ]}
+  data-category={category}
+  data-title={title}
+  aria-disabled={!available}
+>
+  <div class="flex items-center justify-between">
+    {category && <span class="tag">{category}</span>}
+    {!available && <span class="text-xs text-ink-400">Coming soon</span>}
+  </div>
+  <h3
+    class="mt-3 text-lg font-semibold group-hover:text-brand-600
+      dark:group-hover:text-brand-300"
+  >
+    {title}
+  </h3>
+  <p class="mt-2 flex-1 text-sm text-ink-600 dark:text-ink-300">{description}</p>
+</a>

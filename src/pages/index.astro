@@ -1,0 +1,132 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { site } from "../lib/site";
+import { tools } from "../lib/tools";
+
+const projects = (await getCollection("projects"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const liveTools = tools.filter((t) => t.available);
+
+const sections = [
+  {
+    href: "/projects",
+    title: "Projects",
+    body: "Things I've designed, built, and shipped.",
+  },
+  {
+    href: "/tools",
+    title: "Tools",
+    body: "A growing kit of fast, no-nonsense web utilities.",
+  },
+  {
+    href: "/poe",
+    title: "Path of Exile",
+    body: "Resources, references, and live data for PoE.",
+  },
+];
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <section class="hero-glow border-b border-ink-200 dark:border-ink-800">
+    <div class="container-page py-20 sm:py-28">
+      <p class="tag mb-4">Portfolio - Tools - Path of Exile</p>
+      <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
+        Hi, I'm {site.author}.
+        <span class="text-brand-600 dark:text-brand-400"
+          >I build useful things.</span
+        >
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-ink-600 dark:text-ink-300">
+        Welcome to {site.domain} - my corner of the web. Part portfolio, part
+        toolbox, part Path of Exile companion. Poke around.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/projects" class="btn-primary">View projects</a>
+        <a href="/tools" class="btn-ghost">Try the tools</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section cards -->
+  <section class="container-page py-16">
+    <div class="grid gap-6 sm:grid-cols-3">
+      {
+        sections.map((s) => (
+          <a href={s.href} class="card group">
+            <h2 class="text-xl font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-300">
+              {s.title}
+            </h2>
+            <p class="mt-2 text-sm text-ink-600 dark:text-ink-300">{s.body}</p>
+            <span class="mt-4 inline-block text-sm font-medium text-brand-600 dark:text-brand-300">
+              Explore &rarr;
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Featured projects -->
+  {
+    projects.length > 0 && (
+      <section class="container-page pb-16">
+        <div class="mb-6 flex items-end justify-between">
+          <h2 class="text-2xl font-bold tracking-tight">Recent projects</h2>
+          <a
+            href="/projects"
+            class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-300"
+          >
+            All projects &rarr;
+          </a>
+        </div>
+        <div class="grid gap-6 md:grid-cols-3">
+          {projects.map((p) => (
+            <ProjectCard
+              title={p.data.title}
+              description={p.data.description}
+              tags={p.data.tags}
+              repo={p.data.repo}
+              demo={p.data.demo}
+              href={`/projects/${p.id}`}
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Tools teaser -->
+  {
+    liveTools.length > 0 && (
+      <section class="container-page pb-20">
+        <div class="mb-6 flex items-end justify-between">
+          <h2 class="text-2xl font-bold tracking-tight">Handy tools</h2>
+          <a
+            href="/tools"
+            class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-300"
+          >
+            All tools &rarr;
+          </a>
+        </div>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {liveTools.map((t) => (
+            <a href={`/tools/${t.slug}`} class="card group">
+              <span class="tag">{t.category}</span>
+              <h3 class="mt-3 text-lg font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-300">
+                {t.title}
+              </h3>
+              <p class="mt-2 text-sm text-ink-600 dark:text-ink-300">
+                {t.description}
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
