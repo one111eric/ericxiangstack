@@ -1,6 +1,6 @@
 # eric-xiang.com
 
-Personal site for Eric Xiang: portfolio, a suite of handy web tools, and Path of Exile resources. Built with [Astro](https://astro.build), React islands, and Tailwind CSS, deployed on [Cloudflare Pages](https://pages.cloudflare.com) with Pages Functions for the backend.
+Personal site for Eric Xiang: portfolio, a suite of handy web tools, and Path of Exile resources. Built with [Astro](https://astro.build), React islands, and Tailwind CSS, deployed on [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/) (Static Assets) with a Worker for the backend API.
 
 ## Sections
 
@@ -18,9 +18,10 @@ Personal site for Eric Xiang: portfolio, a suite of handy web tools, and Path of
 
 - Astro 7 (static output) + `@astrojs/react`, `@astrojs/mdx`, `@astrojs/sitemap`
 - Tailwind CSS v4 (via `@tailwindcss/vite`)
-- Cloudflare Pages (hosting) + Pages Functions (`functions/`) for the API
-  - `functions/api/poe/[[path]].ts` - proxies poe.ninja with edge/KV caching
-  - `functions/api/contact.ts` - contact form handler (optional Resend delivery)
+- Cloudflare Workers with Static Assets: the static `dist/` is served directly, and `worker/index.ts` handles the API
+  - `GET /api/poe/*` - proxies poe.ninja with edge/KV caching
+  - `POST /api/contact` - contact form handler (optional Resend delivery)
+  - `run_worker_first = ["/api/*"]` in `wrangler.toml` means only API routes invoke the Worker; static pages are served without a Worker call
 
 ## Local development
 
@@ -30,12 +31,12 @@ npm install
 npm run dev
 ```
 
-Astro's dev server does not run the Cloudflare Pages Functions in `functions/`.
-To test the site together with the API locally, build and serve with Wrangler:
+Astro's dev server (`npm run dev`) serves the pages but does not run the Worker
+API in `worker/`. To test the site together with the API locally, build and
+serve it through Wrangler:
 
 ```bash
-npm run build
-npm run preview   # wrangler pages dev ./dist
+npm run preview   # astro build && wrangler dev
 ```
 
 ## Commands reference
@@ -52,9 +53,9 @@ first in a fresh terminal so you're on the pinned Node version.
 | `npm run dev` | Start the dev server at http://localhost:4321 |
 | `npm run dev -- --port 4322` | Start the dev server on a different port |
 | `npm run build` | Production build to `dist/` |
-| `npm run preview` | Serve the build with Wrangler (runs Pages Functions too) |
+| `npm run preview` | Build, then serve site + Worker API locally via `wrangler dev` |
 | `npm run check` | Type-check `.astro`/`.ts`/`.tsx` (`astro check`) |
-| `npm run deploy` | Build and deploy to Cloudflare Pages via Wrangler |
+| `npm run deploy` | Build and deploy to Cloudflare Workers via Wrangler |
 | `npm run kill` | Force-stop whatever is listening on port 4321 |
 | `npx astro <cmd>` | Run any Astro subcommand (e.g. `npx astro sync`, `npx astro add`) |
 
@@ -75,16 +76,27 @@ lsof -ti tcp:4321 | xargs kill -9
 lsof -nP -iTCP:4321 -sTCP:LISTEN || echo "port 4321 is free"
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers)
+
+This project deploys as a Worker with Static Assets. With a Git-connected
+Workers project, Cloudflare runs the build command and then `npx wrangler deploy`.
 
 1. Push this repo to GitHub.
-2. In the Cloudflare dashboard: **Workers & Pages -> Create -> Pages -> Connect to Git**.
+2. In the Cloudflare dashboard: **Workers & Pages -> Create -> Import a repository** and select this repo.
 3. Build settings:
    - Build command: `npm run build`
-   - Build output directory: `dist`
-4. Add the custom domain `eric-xiang.com` under the project's **Custom domains** tab (Cloudflare manages DNS + HTTPS automatically).
+   - Deploy command: `npx wrangler deploy` (default)
+4. Ensure the Worker project's **name matches `name` in `wrangler.toml`** (currently `ericxiangstack`), or update the file to match.
+5. Add the custom domain `eric-xiang.com` under the Worker's **Domains & Routes** settings (Cloudflare manages DNS + HTTPS automatically).
 
-Set `NODE_VERSION=22` in the Pages project's environment variables so the build uses a Node version compatible with Astro 7 (the `.nvmrc` is also auto-detected).
+Set `NODE_VERSION=22` in the project's build environment variables so the build
+uses a Node version compatible with Astro 7 (the `.nvmrc` is also auto-detected).
+
+Locally, deploy with:
+
+```bash
+npm run deploy   # astro build && wrangler deploy
+```
 
 ### Optional: KV cache for the PoE proxy
 
@@ -92,26 +104,25 @@ Set `NODE_VERSION=22` in the Pages project's environment variables so the build 
 npx wrangler kv namespace create POE_CACHE
 ```
 
-Add the returned id to `wrangler.toml` (uncomment the `[[kv_namespaces]]` block)
-and bind `POE_CACHE` in the Pages project settings. Without it, the proxy still
-works using Cloudflare's edge cache.
+Add the returned id to `wrangler.toml` (uncomment the `[[kv_namespaces]]` block).
+Without it, the proxy still works using Cloudflare's edge cache.
 
 ### Optional: contact email delivery
 
-Set these environment variables in the Pages project settings to deliver
-messages via [Resend](https://resend.com):
+Set these environment variables (Worker secrets/vars) to deliver messages via
+[Resend](https://resend.com):
 
 - `RESEND_API_KEY`
 - `CONTACT_TO`
 - `CONTACT_FROM`
 
-Without them, the form validates and accepts submissions (logged in function
+Without them, the form validates and accepts submissions (logged in Worker
 output) so it works out of the box.
 
 ### Optional: Cloudflare Web Analytics
 
 Enable **Web Analytics** for the domain in the Cloudflare dashboard - it can be
-turned on with zero code changes (automatic injection) for Pages projects.
+turned on with zero code changes (automatic injection).
 
 ## Adding a new tool
 

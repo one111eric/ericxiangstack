@@ -11,10 +11,10 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "wrangler pages dev ./dist",
+    "preview": "astro build && wrangler dev",
     "check": "astro check",
     "astro": "astro",
-    "deploy": "astro build && wrangler pages deploy ./dist",
+    "deploy": "astro build && wrangler deploy",
     "kill": "kill -9 $(lsof -ti tcp:4321) 2>/dev/null || true"
   },
   "dependencies": {

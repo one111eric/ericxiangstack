@@ -1,9 +1,21 @@
+# Cloudflare Workers (Static Assets) configuration.
+# Astro builds the static site to ./dist; this Worker serves the API under
+# /api/* and the platform serves the static assets directly.
+#
+# NOTE: `name` must match your Cloudflare Worker project's name. If your
+# connected project uses a different name, update it here.
 name = "ericxiangstack"
+main = "worker/index.ts"
 compatibility_date = "2026-07-15"
-pages_build_output_dir = "dist"
 
-# KV namespace used by the PoE proxy to cache upstream responses and respect
-# rate limits. Create it once with:
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# Run the Worker first only for API routes; everything else is served straight
+# from static assets (which don't count against Worker request limits).
+run_worker_first = ["/api/*"]
+
+# KV cache used by the PoE proxy to respect upstream rate limits. Create it with:
 #   wrangler kv namespace create POE_CACHE
 # then paste the generated id below and uncomment.
 # [[kv_namespaces]]
