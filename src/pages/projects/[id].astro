@@ -13,7 +13,11 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, description, tags, repo, demo, date } = project.data;
+const { title, description, tags, repo, demo, startDate, endDate } =
+  project.data;
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("en-US", { year: "numeric", month: "long" });
 ---
 
 <BaseLayout title={title} description={description}>
@@ -21,9 +25,17 @@ const { title, description, tags, repo, demo, date } = project.data;
 
   <section class="container-page py-12">
     <div class="mb-6 flex flex-wrap items-center gap-3 text-sm">
-      <time class="text-ink-500" datetime={date.toISOString()}>
-        {date.toLocaleDateString("en-US", { year: "numeric", month: "long" })}
-      </time>
+      <span class="text-ink-500">
+        <time datetime={startDate.toISOString()}>{fmtDate(startDate)}</time>
+        {" \u2013 "}
+        {
+          endDate ? (
+            <time datetime={endDate.toISOString()}>{fmtDate(endDate)}</time>
+          ) : (
+            "Present"
+          )
+        }
+      </span>
       {tags.map((t) => <span class="tag">{t}</span>)}
     </div>
 
@@ -45,8 +57,7 @@ const { title, description, tags, repo, demo, date } = project.data;
     }
 
     <article
-      class="prose-links max-w-3xl space-y-4 leading-relaxed text-ink-700
-        dark:text-ink-300"
+      class="prose prose-slate max-w-3xl dark:prose-invert"
     >
       <Content />
     </article>

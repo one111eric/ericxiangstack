@@ -1,10 +1,10 @@
 ---
 title: "Web Tools Suite"
 description: "A collection of fast, privacy-friendly browser utilities - unit conversion, formatting, encoding, and more."
-date: 2026-07-10
+startDate: 2026-07-10
 tags: ["React", "TypeScript", "UX"]
 featured: true
-order: 2
+order: 3
 ---
 
 ## Overview

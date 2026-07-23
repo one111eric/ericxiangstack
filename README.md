@@ -137,3 +137,47 @@ turned on with zero code changes (automatic injection).
 - PoE guides: add Markdown/MDX files to `src/content/poe/`.
 
 Schemas are defined in `src/content.config.ts`.
+
+### Images in projects
+
+Put source images in `src/assets/projects/` and reference them from the
+Markdown body using a path relative to the `.md` file:
+
+```md
+![Screenshot of My Project](../../assets/projects/my-project.png)
+```
+
+Astro optimizes these at build time (compression, responsive `srcset`, modern
+formats). For fixed, un-optimized files (e.g. a downloadable asset), use
+`public/` and reference it with an absolute path like `/foo.png`.
+
+### Sizing images (MDX)
+
+Plain `.md` can't size images - the `![alt](src){width=300}` attribute syntax
+is **not** supported and renders as literal text. To control size (while
+keeping optimization), use the `.mdx` extension and the `<Image>` component:
+
+```mdx
+import { Image } from "astro:assets";
+import qboAgent from "../../assets/projects/qbo-intelligence/images/qbo-agent.png";
+
+## Overview
+
+{/* Width only - height is derived from the aspect ratio */}
+<Image src={qboAgent} alt="QBO Intelligence" width={300} />
+
+{/* Or size with CSS classes (Tailwind) */}
+<Image src={qboAgent} alt="QBO Intelligence" class="w-72 rounded-lg" />
+
+{/* Retina: also generate a 2x variant */}
+<Image src={qboAgent} alt="QBO Intelligence" width={300} densities={[1, 2]} />
+```
+
+Notes:
+
+- Only `.mdx` files can `import` and use components; the content loader already
+  picks up both `.md` and `.mdx`, so just rename the file to `.mdx`.
+- You can still use plain `![alt](./path.png)` in `.mdx` for full-width images
+  that don't need sizing - those are optimized too.
+- After renaming a content file, restart `npm run dev` (the dev server's
+  content store can otherwise report an empty collection until a restart).

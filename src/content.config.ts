@@ -7,7 +7,10 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    date: z.coerce.date(),
+    // When work on the project started, and (optionally) when it ended.
+    // Omit `endDate` if the project is ongoing / you still maintain it.
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     repo: z.url().optional(),
     demo: z.url().optional(),

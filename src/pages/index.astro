@@ -5,9 +5,19 @@ import ProjectCard from "../components/ProjectCard.astro";
 import { site } from "../lib/site";
 import { tools } from "../lib/tools";
 
-const projects = (await getCollection("projects"))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+// Homepage "Notable projects": you curate these via frontmatter.
+// - Set `featured: true` on the projects you want here.
+// - Control their order with `order` (ascending; ties fall back to newest).
+// If none are marked featured, fall back to the 3 most recent.
+const all = await getCollection("projects");
+const byStartDesc = (a: (typeof all)[number], b: (typeof all)[number]) =>
+  b.data.startDate.valueOf() - a.data.startDate.valueOf();
+const featured = all
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order || byStartDesc(a, b));
+const projects = (
+  featured.length > 0 ? featured : [...all].sort(byStartDesc)
+).slice(0, 3);
 
 const liveTools = tools.filter((t) => t.available);
 
@@ -38,8 +48,8 @@ const sections = [
       <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
         Hi, I'm {site.author}.
         <span class="text-brand-600 dark:text-brand-400"
-          >I build useful things.</span
-        >
+          > I'm a software engineer.
+        </span>
       </h1>
       <p class="mt-6 max-w-2xl text-lg text-ink-600 dark:text-ink-300">
         Welcome to {site.domain} - my corner of the web. Part portfolio, part
@@ -76,7 +86,7 @@ const sections = [
     projects.length > 0 && (
       <section class="container-page pb-16">
         <div class="mb-6 flex items-end justify-between">
-          <h2 class="text-2xl font-bold tracking-tight">Recent projects</h2>
+          <h2 class="text-2xl font-bold tracking-tight">Notable Projects</h2>
           <a
             href="/projects"
             class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-300"

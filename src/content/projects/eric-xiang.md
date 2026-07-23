@@ -1,12 +1,12 @@
 ---
 title: "eric-xiang.com"
 description: "This site - a personal portfolio, web tools suite, and Path of Exile companion, built on Astro and Cloudflare."
-date: 2026-07-15
+startDate: 2026-07-15
 tags: ["Astro", "Cloudflare", "TypeScript", "Tailwind"]
 repo: "https://github.com/one111eric/ericxiangstack"
 demo: "https://eric-xiang.com"
-featured: true
-order: 1
+featured: false
+order: 4
 ---
 
 ## Overview

@@ -1,0 +1,4 @@
+# Put project images here (png/jpg/webp/avif/gif) and reference them from the
+# Markdown body using a path relative to the .md file, e.g.:
+#   ![Alt text](../../assets/projects/my-screenshot.png)
+# Astro optimizes these at build time (responsive srcset + modern formats).

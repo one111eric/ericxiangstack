@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* Enable class-based dark mode: `.dark` on <html>. */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -104,4 +105,11 @@ body {
   .prose-links a {
     @apply text-brand-600 underline-offset-2 hover:underline dark:text-brand-300;
   }
+}
+
+/* Brand-colored links inside rendered Markdown (Tailwind Typography).
+   Unlayered so it overrides the plugin's layered defaults. */
+.prose {
+  --tw-prose-links: var(--color-brand-600);
+  --tw-prose-invert-links: var(--color-brand-300);
 }
